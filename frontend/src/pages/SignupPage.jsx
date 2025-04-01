@@ -235,29 +235,9 @@ const SignUpPage = () => {
                     MENTOR<span className="text-purple-400">ME</span>
                 </div>
                 <nav className="flex items-center gap-6">
-                    <a href="#" className="hover:text-purple-400 text-gray-300">
-                        HOME
-                    </a>
-                    <a href="#" className="hover:text-purple-400 text-gray-300">
-                        WHY US?
-                    </a>
+                   
                     <div className="flex items-center bg-gray-800 rounded-full px-4 py-1">
-                        <a href="#" className="hover:text-purple-400 text-gray-300">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
-                        </a>
+                        
                     </div>
                 </nav>
             </div>

@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { createServer, request } from "http";
 
+import path from "path";
+
 import { connectDB } from "./lib/db.js";
 import { initializeSocket } from "./lib/socket.js";
 import authRoutes from "./routes/auth.route.js";
@@ -16,6 +18,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+const __dirname = path.resolve();
 
 const server = createServer(app);
 const io = initializeSocket(server);
@@ -37,6 +40,14 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/requests", requestRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
 server.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);

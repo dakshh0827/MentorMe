@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMenteeStore } from '../stores/useMenteeStore';
 import useRequestStore from '../stores/useRequestStore';
 import { useAuthStore } from '../stores/useAuthStore';
+import { axiosInstance } from '../lib/axios.js';
 
 export const MentorMatching = () => {
   const [filters, setFilters] = useState({
@@ -21,9 +22,10 @@ export const MentorMatching = () => {
   const [isMatching, setIsMatching] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [showResults, setShowResults] = useState(false);
+  const [requestStatuses, setRequestStatuses] = useState({ pending: {}, accepted: {}, rejected: {} });
 
   const { mentors, fetchMentors, isLoading } = useMenteeStore();
-  const { sendRequest, requests, fetchRequests } = useRequestStore();
+  const { sendRequest, fetchRequests, listenForUpdates } = useRequestStore();
   const { authUser } = useAuthStore();
 
   const domains = ['All Domains', 'Computer Science', 'Engineering', 'Medicine', 'Business', 'Arts', 'Law', 'Education'];
@@ -35,10 +37,37 @@ export const MentorMatching = () => {
 
   useEffect(() => {
     fetchMentors();
+    // Fetch requests and set up status tracking
     if (authUser?._id) {
-      fetchRequests(authUser._id);
+      fetchRequestsData(authUser._id);
+      listenForUpdates(authUser._id);
     }
-  }, [fetchMentors, authUser, fetchRequests]);
+  }, [fetchMentors, authUser]);
+
+  // Function to fetch request data and update statuses
+  const fetchRequestsData = async (userId) => {
+    try {
+      const response = await axiosInstance.get(`/requests/${userId}`);
+      const requestsData = response.data;
+      
+      const statuses = { pending: {}, accepted: {}, rejected: {} };
+
+      requestsData.forEach(req => {
+        if (req.status === 'pending') {
+          statuses.pending[req.to._id || req.to] = true;
+        } else if (req.status === 'accepted') {
+          statuses.accepted[req.to._id || req.to] = true;
+        } else if (req.status === 'rejected') {
+          statuses.rejected[req.to._id || req.to] = true;
+        }
+      });
+
+      setRequestStatuses(statuses);
+      
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -169,18 +198,40 @@ export const MentorMatching = () => {
     }, 1500);
   };
 
-  const hasRequestBeenSent = (mentorId) => {
-    return requests?.some(req => req.from === authUser?._id && req.to === mentorId);
-  };
-
-  const handleSendRequest = (mentorId) => {
-    sendRequest(authUser._id, mentorId);
-    showToast('Request Sent Successfully!');
-  };
-
+  // Updated request button state function to match MenteeDashboard
   const getRequestButtonProps = (mentorId) => {
-    if (hasRequestBeenSent(mentorId)) return { text: 'Request Sent', disabled: true, className: 'bg-gray-500 cursor-not-allowed' };
+    if (requestStatuses.pending[mentorId]) return { text: 'Request Sent', disabled: true, className: 'bg-gray-500 cursor-not-allowed' };
+    else if (requestStatuses.accepted[mentorId]) return { text: 'Accepted', disabled: true, className: 'bg-green-500 cursor-not-allowed' };
+    else if (requestStatuses.rejected[mentorId]) return { text: 'Send Request', disabled: false, className: 'bg-purple-600 hover:bg-purple-700' };
     else return { text: 'Send Request', disabled: false, className: 'bg-purple-600 hover:bg-purple-700' };
+  };
+
+  // Updated send request function to match MenteeDashboard
+  const handleSendRequest = async (mentorId) => {
+    if (!authUser) {
+      showToast('You must be logged in to send a request', 'error');
+      return;
+    }
+
+    if (requestStatuses.pending[mentorId]) {
+      showToast('Request already sent to this mentor', 'info');
+      return;
+    }
+
+    try {
+      await sendRequest(authUser._id, mentorId);
+
+      // Immediately update local state
+      setRequestStatuses(prev => ({
+        ...prev,
+        pending: { ...prev.pending, [mentorId]: true }
+      }));
+
+      showToast('Mentorship request sent successfully!', 'success');
+    } catch (error) {
+      console.error('Failed to send request:', error);
+      showToast('Failed to send request. Please try again.', 'error');
+    }
   };
 
   return (

@@ -7,9 +7,7 @@ const IntroPage = () => {
   const { authUser, logout } = useAuthStore();
 
   const handleLetsLinkClick = () => {
-    if (authUser?.role === "mentee") {
-      navigate("/menteeLink");
-    }
+      navigate("/login");
   };
 
   return (
@@ -21,8 +19,6 @@ const IntroPage = () => {
         </div>
 
         <nav className="flex items-center gap-6">
-          <a href="#" className="text-purple-400 hover:underline">HOME</a>
-          <a href="#" className="hover:text-gray-300">WHY US?</a>
 
           {!authUser ? (
             <>

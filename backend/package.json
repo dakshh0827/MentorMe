@@ -22,6 +22,7 @@
     "mongoose": "^8.10.1"
   },
   "dependencies": {
+    "bloody": "file:..",
     "express-fileupload": "^1.5.1",
     "mongodb": "^6.13.0",
     "nodemon": "^3.1.9",

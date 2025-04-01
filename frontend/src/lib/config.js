@@ -41,6 +41,23 @@ const config = {
     debugging: "I’ve been stuck on a coding bug for hours. How do I stay focused and not get frustrated?",
     productivity: "How can I balance learning new tech skills while handling school or work?",
   },
+
+  responseConfig: {
+    maxTokensShort: 40, // Approx. 40 words
+    maxTokensLong: 150, // For detailed responses
+    promptShort: "Respond in 40 words max. Avoid special characters and formatting symbols.",
+    promptLong: "Provide a detailed response. Avoid special characters and formatting symbols.",
+  },
+
+  getResponseConfig: (userMessage) => {
+    const detailedRequestKeywords = ["more details", "elaborate", "explain in detail", "provide more info"];
+    const isDetailedRequest = detailedRequestKeywords.some(keyword => userMessage.toLowerCase().includes(keyword));
+
+    return {
+      maxTokens: isDetailedRequest ? config.responseConfig.maxTokensLong : config.responseConfig.maxTokensShort,
+      systemPrompt: isDetailedRequest ? config.responseConfig.promptLong : config.responseConfig.promptShort,
+    };
+  },
 };
 
 export default config;
