@@ -3,7 +3,7 @@ import { useMenteeStore } from '../stores/useMenteeStore';
 import useRequestStore from '../stores/useRequestStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import { axiosInstance } from '../lib/axios.js';
-import ChatBot from '../components/chatBot.jsx';
+import ChatBot from '../components/ChatBot.jsx';
 
 export const MentorMatching = () => {
   const [filters, setFilters] = useState({
