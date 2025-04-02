@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { axiosInstance } from "../lib/axios.js";
 import { toast } from "react-toastify";
 
-const socket = io("http://localhost:5001");
+const socket = io("https://mentorme-qs6s.onrender.com");
 
 const useRequestStore = create((set, get) => ({
   pendingRequests: [],
