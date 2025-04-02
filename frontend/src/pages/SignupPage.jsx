@@ -233,12 +233,12 @@ const SignUpPage = () => {
             <div className="w-full flex items-center justify-between px-10 py-4 border-b border-gray-700">
                 <div className="flex items-center">
                     <img 
-                        src="../public/3.png"
+                        src="/3.png"
                         alt="MENTORME"
                         className="h-10 w-10 object-contain"
                     />
                     <img 
-                        src="../public/2.png"
+                        src="/2.png"
                         alt="MENTORME"
                         className="h-10 w-46 object-contain -ml-2"
                     />
