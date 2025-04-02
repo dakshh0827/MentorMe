@@ -7,7 +7,7 @@ const onlineUsers = new Map();
 export const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: [process.env.CLIENT_URL || "http://localhost:5174", "https://mentorme-qs6s.onrender.com"],
+      origin: ["https://mentorme-qs6s.onrender.com", process.env.CLIENT_URL || "http://localhost:5174"],
       methods: ["GET", "POST"],
       credentials: true
     }
