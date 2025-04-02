@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import io from 'socket.io-client';
 
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_URL = import.meta.env.REACT_APP_API_URL || 'https://mentorme-qs6s.onrender.com';
 let socket;
 
 const useSessionsStore = create((set, get) => ({
