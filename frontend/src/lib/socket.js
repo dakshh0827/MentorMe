@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
 // Create socket connection with auth token
-export const socket = io(import.meta.env.REACT_APP_API_URL || "http://localhost:5001", {
+export const socket = io(import.meta.env.REACT_APP_API_URL || "https://mentorme-qs6s.onrender.com", {
   autoConnect: true,
   withCredentials: true,
   extraHeaders: {
