@@ -290,12 +290,12 @@ const MentorDashboard = () => {
       <div className="border-b border-gray-700 flex justify-between items-center px-6 py-2">
       <div className="flex items-center">
         <img 
-          src="../public/3.png"
+          src="/3.png"
           alt="MENTORME"
           className="h-10 w-10 object-contain"
         />
         <img 
-          src="../public/2.png"
+          src="/2.png"
           alt="MENTORME"
           className="h-10 w-46 object-contain -ml-2"
         />
