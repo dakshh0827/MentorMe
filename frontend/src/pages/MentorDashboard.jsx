@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAuthStore } from "../stores/useAuthStore.js";
 import useRequestStore from "../stores/useRequestStore.js";
 import useSessionsStore from "../stores/useSessionsStore.js";
-import ChatBot from "../components/chatBot.jsx";
+import ChatBot from "../components/ChatBot.jsx";
 import { axiosInstance } from '../lib/axios.js';
 import { useNavigate } from "react-router-dom";
 
