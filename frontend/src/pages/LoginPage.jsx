@@ -27,8 +27,17 @@ const LoginPage = () => {
     <div className="flex min-h-screen flex-col bg-gray-900 text-gray-200">
       {/* Navigation Bar */}
       <div className="w-full flex items-center justify-between px-10 py-4 border-b border-gray-700">
-        <div className="text-3xl font-bold text-white">
-          MENTOR<span className="text-purple-400">ME</span>
+        <div className="flex items-center">
+          <img 
+            src="../public/3.png"
+            alt="MENTORME"
+            className="h-10 w-10 object-contain"
+          />
+          <img 
+            src="../public/2.png"
+            alt="MENTORME"
+            className="h-10 w-46 object-contain -ml-2"
+          />
         </div>
       </div>
 

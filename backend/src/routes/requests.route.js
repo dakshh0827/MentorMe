@@ -16,8 +16,11 @@ router.get('/mentor/:mentorId', protectRoute, getMentorRequests);
 router.get('/resolved/:mentorId', protectRoute, getResolvedRequests);
 
 // Accept a request
-router.post('/:requestId/accept', protectRoute, acceptRequest);
-
+router.post("/:requestId/accept", (req, res, next) => {
+    console.log("Incoming request to accept:", req.params.requestId);
+    next();
+  }, protectRoute, acceptRequest);
+  
 // Reject a request
 router.post('/:requestId/reject', protectRoute, rejectRequest);
 

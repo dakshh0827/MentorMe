@@ -3,6 +3,7 @@ import { useMenteeStore } from '../stores/useMenteeStore';
 import useRequestStore from '../stores/useRequestStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import { axiosInstance } from '../lib/axios.js';
+import ChatBot from '../components/chatBot.jsx';
 
 export const MentorMatching = () => {
   const [filters, setFilters] = useState({
@@ -250,11 +251,18 @@ export const MentorMatching = () => {
       <header className="border-b border-gray-800 p-4">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-purple-600 mr-2"></div>
-            <h1 className="text-xl font-bold">
-              <span>Mentor</span>
-              <span className="text-purple-500">Me</span>
-            </h1>
+              <div className="flex items-center">
+                <img 
+                  src="../public/3.png"
+                  alt="MENTORME"
+                  className="h-10 w-10 object-contain"
+                />
+                <img 
+                  src="../public/2.png"
+                  alt="MENTORME"
+                  className="h-10 w-46 object-contain -ml-2"
+                />
+            </div>
           </div>
           <nav className="flex items-center space-x-4">
             <button className="p-2">
@@ -493,6 +501,8 @@ export const MentorMatching = () => {
           </div>
         )}
       </main>
+
+      <ChatBot />
     </div>
   );
 };

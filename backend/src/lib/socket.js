@@ -1,40 +1,97 @@
-import { Server } from "socket.io";
+import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
+import Message from '../models/message.model.js';
 
-const activeUsers = new Map(); // Store active users
+const onlineUsers = new Map();
 
 export const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5174",
-      credentials: true,
-    },
+      origin: process.env.CLIENT_URL || "http://localhost:5174",
+      methods: ["GET", "POST"],
+      credentials: true
+    }
   });
 
-  io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
+  io.use((socket, next) => {
+    try {
+      const token = socket.handshake.headers.authorization;
+      if (!token) {
+        return next(new Error('Authentication error: Token missing'));
+      }
 
-    // Join user to their personal room
-    socket.on("join", (userId) => {
-      if (userId) {
-        activeUsers.set(userId, socket.id);
-        socket.join(userId);
-        console.log(`User ${userId} joined room`);
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+          return next(new Error('Authentication error: Invalid token'));
+        }
+
+        socket.user = decoded;
+        next();
+      });
+    } catch (error) {
+      next(new Error('Authentication error'));
+    }
+  });
+
+  io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`);
+
+    if (socket.user && socket.user._id) {
+      onlineUsers.set(socket.user._id, socket.id);
+
+      io.emit('user_status', { 
+        userId: socket.user._id, 
+        status: 'online' 
+      });
+    }
+
+    socket.on('join_chat', ({ roomId }) => {
+      socket.join(roomId);
+      console.log(`User ${socket.user?._id} joined room: ${roomId}`);
+    });
+
+    socket.on('leave_chat', ({ roomId }) => {
+      socket.leave(roomId);
+      console.log(`User ${socket.user?._id} left room: ${roomId}`);
+    });
+
+    socket.on('send_message', async (messageData) => {
+      try {
+        if (messageData.roomId) {
+          io.to(messageData.roomId).emit('receive_message', messageData);
+        }
+
+        if (!messageData._id) {
+          const newMessage = new Message({
+            sender: messageData.sender,
+            recipient: messageData.recipient,
+            content: messageData.content
+          });
+          await newMessage.save();
+        }
+      } catch (error) {
+        console.error('Error handling message:', error);
       }
     });
 
-    // Handle disconnection
-    socket.on("disconnect", () => {
-      for (let [userId, socketId] of activeUsers.entries()) {
-        if (socketId === socket.id) {
-          activeUsers.delete(userId);
-          break;
-        }
+    socket.on('typing_indicator', ({ roomId, userId, isTyping }) => {
+      socket.to(roomId).emit('typing_indicator', { userId, isTyping });
+    });
+
+    socket.on('disconnect', () => {
+      console.log(`User disconnected: ${socket.id}`);
+
+      if (socket.user && socket.user._id) {
+        onlineUsers.delete(socket.user._id);
+        io.emit('user_status', { 
+          userId: socket.user._id, 
+          status: 'offline' 
+        });
       }
-      console.log("User disconnected:", socket.id);
     });
   });
 
   return io;
 };
 
-export { activeUsers };
+export { onlineUsers };

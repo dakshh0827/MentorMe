@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@splinetool/react-spline": "^4.0.0",
     "axios": "^1.7.9",
     "bcryptjs": "^3.0.2",
     "bloody": "file:..",
     "cloudinary": "^2.6.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express-fileupload": "^1.5.1",
     "groq-sdk": "^0.17.0",

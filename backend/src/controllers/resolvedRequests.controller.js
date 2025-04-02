@@ -31,7 +31,7 @@ export const getResolvedRequests = async (req, res) => {
       to: mentorId,
       status: { $in: ["accepted", "rejected"] },
     })
-      .populate("from", "name email")
+      .populate("from", "name email subject class school")
       .populate("to", "name email")
       .sort({ resolvedAt: -1 });
 
@@ -39,7 +39,7 @@ export const getResolvedRequests = async (req, res) => {
     if (resolvedRequests.length === 0) {
       return res.status(200).json({ message: "No resolved requests found", requests: [] });
     }
-
+    console.log("resolved", resolvedRequests);
     res.status(200).json(resolvedRequests);
   } catch (error) {
     console.error("Error fetching resolved requests:", error);
@@ -50,10 +50,11 @@ export const getResolvedRequests = async (req, res) => {
 // Accept a request
 export const acceptRequest = async (req, res) => {
   try {
+    console.log("entered.......");
     const requestId = req.params.requestId;
 
     const request = await Request.findById(requestId);
-
+    console.log("request..", request);
     if (!request || request.status !== "pending") {
       return res.status(404).json({ message: "Request not found or already processed" });
     }

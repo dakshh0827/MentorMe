@@ -11,6 +11,8 @@ import { initializeSocket } from "./lib/socket.js";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import requestRoutes from "./routes/requests.route.js";
+import messageRoutes from "./routes/message.route.js";
+import sessionRoutes from "./routes/sessions.route.js";
 import fileUpload from "express-fileupload";
 
 
@@ -32,14 +34,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5174",
-    credentials: true,
+    origin: ["http://localhost:3000", "http://localhost:5174"], // Allow both origins
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true
   })
 );
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/requests", requestRoutes);
+app.use('/api/messages', messageRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

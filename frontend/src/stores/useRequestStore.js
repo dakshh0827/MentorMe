@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const socket = io("http://localhost:5001");
 
 const useRequestStore = create((set, get) => ({
-  requests: [],
+  pendingRequests: [],
   resolvedRequests: [],
   isLoading: false,
   error: null,
@@ -20,12 +20,12 @@ const useRequestStore = create((set, get) => ({
       console.log("Fetched requests data:", res.data); // Debugging log
   
       if (!res.data || !Array.isArray(res.data)) {
+        console.log("entered error");
         console.error("Invalid response format:", res.data);
         set({ requests: [], isLoading: false }); // Set empty requests array
         return [];
       }
-      set({ requests: res.data, isLoading: false });
-      return res.data;
+      set({ pendingRequests: res.data, isLoading: false });
     } catch (error) {
       set({
         error: error.response?.data?.message || "Failed to fetch requests",
@@ -47,7 +47,7 @@ const useRequestStore = create((set, get) => ({
         set({ resolvedRequests: res.data, isLoading: false }); // Set to empty array
         return; // Early return to prevent further errors
       }
-  
+
       set({ resolvedRequests: res.data, isLoading: false });
     } catch (error) {
       set({

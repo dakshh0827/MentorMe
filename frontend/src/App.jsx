@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import MenteeDashboard from "./pages/MenteeDashboard.jsx";
 import MentorDashboard from "./pages/MentorDashboard.jsx";
 import {MentorMatching} from "./pages/MentorMatching.jsx";
+import ConnectPage from "./pages/ConnectPage";
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "./stores/useAuthStore";
@@ -45,6 +47,7 @@ const App = () => {
                 <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
                 <Route path="/dashboard/:userType" element={authUser ? <DashboardRoute /> : <Navigate to="/" />} />
                 <Route path="/mentorMatching" element={authUser ? <MentorMatching /> : <Navigate to="/" />} />
+                <Route path="/connect/:menteeID" element={authUser ? <ConnectPage /> : <Navigate to="/" />} />
             </Routes>
             <Toaster />
         </div>
