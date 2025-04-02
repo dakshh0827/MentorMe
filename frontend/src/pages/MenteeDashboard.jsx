@@ -5,7 +5,7 @@ import useSessionsStore from '../stores/useSessionsStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../lib/axios.js';
-import ChatBot from '../components/chatBot.jsx';
+import ChatBot from '../components/ChatBot.jsx';
 import SessionScheduleModal from '../components/SessionScheduleModal.jsx';
 
 const MenteeDashboard = () => {
