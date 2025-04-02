@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5174"], // Allow both origins
+    origin: ["http://localhost:3000", "http://localhost:5174", "https://mentorme-qs6s.onrender.com"], // Allow both origins
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true
   })
