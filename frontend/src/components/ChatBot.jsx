@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { FaRobot, FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { DotLoader } from 'react-spinners';
-import ReactMarkdown from 'react-markdown';
 import config from '../lib/config.js';
+
+// Lazy load ReactMarkdown to avoid build issues
+const ReactMarkdown = lazy(() => import('react-markdown'));
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,25 +13,22 @@ export default function ChatBot() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
-  
+
     const userMessage = inputMessage.trim();
     setMessages((prev) => [...prev, { content: userMessage, isUser: true }]);
     setInputMessage('');
     setIsLoading(true);
-  
+
     try {
-      // Create conversation history for context
+      if (!config.apiKey) throw new Error("API key is missing in config.js");
+
       const conversationHistory = [
         ...messages.map(msg => ({
           role: msg.isUser ? 'user' : 'assistant',
@@ -37,7 +36,7 @@ export default function ChatBot() {
         })),
         { role: 'user', content: userMessage }
       ];
-      
+
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -45,17 +44,17 @@ export default function ChatBot() {
           'Authorization': `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify({
-          model: config.models.llama,
+          model: config.models?.llama || "default-model",
           messages: conversationHistory,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      console.log("API Response:", data);  // Log the full response
+      console.log("API Response:", data);
       const botResponse = data.choices?.[0]?.message?.content || "I couldn't process that query.";
       setMessages((prev) => [...prev, { content: botResponse, isUser: false }]);
     } catch (error) {
@@ -65,7 +64,6 @@ export default function ChatBot() {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
@@ -87,9 +85,11 @@ export default function ChatBot() {
                 {msg.isUser ? (
                   <span className="text-black">{msg.content}</span>
                 ) : (
-                  <div className="markdown-content text-black">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
+                  <Suspense fallback={<span>Loading...</span>}>
+                    <div className="markdown-content text-black">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  </Suspense>
                 )}
               </div>
             ))}
