@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { DotLoader } from 'react-spinners';
+import ReactMarkdown from 'react-markdown';
 import config from '../lib/config.js';
 
 export default function ChatBot() {
@@ -22,12 +23,22 @@ export default function ChatBot() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
   
-    setMessages(prev => [...prev, { content: inputMessage, isUser: true }]);
+    const userMessage = inputMessage.trim();
+    setMessages((prev) => [...prev, { content: userMessage, isUser: true }]);
     setInputMessage('');
     setIsLoading(true);
   
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { // Check Groq docs for the correct URL
+      // Create conversation history for context
+      const conversationHistory = [
+        ...messages.map(msg => ({
+          role: msg.isUser ? 'user' : 'assistant',
+          content: msg.content
+        })),
+        { role: 'user', content: userMessage }
+      ];
+      
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +46,7 @@ export default function ChatBot() {
         },
         body: JSON.stringify({
           model: config.models.llama,
-          messages: [{ role: 'user', content: inputMessage }],
+          messages: conversationHistory,
         }),
       });
   
@@ -44,11 +55,12 @@ export default function ChatBot() {
       }
   
       const data = await response.json();
+      console.log("API Response:", data);  // Log the full response
       const botResponse = data.choices?.[0]?.message?.content || "I couldn't process that query.";
-      setMessages(prev => [...prev, { content: botResponse, isUser: false }]);
+      setMessages((prev) => [...prev, { content: botResponse, isUser: false }]);
     } catch (error) {
       console.error("Error fetching response:", error);
-      setMessages(prev => [...prev, { content: "Error connecting to guidance knowledge base.", isUser: false }]);
+      setMessages((prev) => [...prev, { content: "Error connecting to guidance knowledge base.", isUser: false }]);
     } finally {
       setIsLoading(false);
     }
@@ -70,9 +82,15 @@ export default function ChatBot() {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`p-3 max-w-[80%] rounded-xl text-black ${msg.isUser ? 'bg-blue-100 ml-auto' : 'bg-gray-200 mr-auto'}`}
+                className={`p-3 max-w-[80%] rounded-xl ${msg.isUser ? 'bg-blue-100 ml-auto' : 'bg-gray-200 mr-auto'}`}
               >
-                {msg.content}
+                {msg.isUser ? (
+                  <span className="text-black">{msg.content}</span>
+                ) : (
+                  <div className="markdown-content text-black">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                )}
               </div>
             ))}
             {isLoading && <DotLoader size={30} color="#2c3e50" />}
