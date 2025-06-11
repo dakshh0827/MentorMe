@@ -34,7 +34,6 @@ dakshh0827-blogs/
 |   ├── src/                       # Frontend source directory
 |   |   ├── assets/                # Static file
 |   |   ├── components/            # Reusable components of react
-|   |   ├── constants/             # Constant components
 |   |   ├── lib/                   # Configuration and utility files
 |   |   ├── pages/                 # Pages of the site
 |   |   ├── store/                 # API call logic stores
