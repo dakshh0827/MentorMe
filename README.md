@@ -77,7 +77,7 @@ To get a local copy up and running, follow these steps.
     ```bash
     cp .env.example .env
     ```
-    Then, fill in the required values in your `.env` file. The primary contact form (`pages/api/form.ts`) uses Resend. You will need to add/update the following variables:
+    Then, fill in the required values in your `.env` file. You will need to add/update the following variables:
 
     ```env
       MONGODB_URI = ""
